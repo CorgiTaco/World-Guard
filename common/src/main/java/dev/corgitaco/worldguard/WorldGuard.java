@@ -68,7 +68,7 @@ public class WorldGuard {
                 // Mismatched seeds
                 if (throwMismatchedSeed) {
                     if (lastData.settings().options().seed() != currentData.settings().options().seed()) {
-                        throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊WORLD GUARDED: Mismatch in seed between current and last worldgen settings. Old seed: [%s] | New seed: [%s].".formatted(lastData.settings().options().seed(), currentData.settings().options().seed()), lastData, currentData));
+                        throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Mismatch in seed between current and last worldgen settings. Old seed: [%s] | New seed: [%s].".formatted(lastData.settings().options().seed(), currentData.settings().options().seed()), lastData, currentData));
                     }
                 }
 
@@ -77,7 +77,7 @@ public class WorldGuard {
                     List<String> newBiomes = currentData.biomeList();
                     for (String oldBiome : oldBiomes) {
                         if (!newBiomes.contains(oldBiome)) {
-                            throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Missing biome in current worldgen settings. Please check your worldgen settings.", lastData, currentData));
+                            throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Missing biome in current worldgen settings. Please check your installed mods and data packs.", lastData, currentData));
                         }
                     }
                 }
@@ -139,8 +139,8 @@ public class WorldGuard {
 
     public static String wrapErrorAndDumpMismatches(String s, LevelData old, LevelData currentData) {
         StringBuilder errorMessage = new StringBuilder(s).append("\n").append("\n");
-        errorMessage.append("Here are some changes World Guard detected in your pack:\n");
-        errorMessage.append("==========================Detected Mod Changes==========================\n");
+        errorMessage.append("\t\tHere are some changes World Guard detected in your pack:\n");
+        errorMessage.append("\t\t==========================Detected Mod Changes==========================\n");
 
 
         Map<String, WGModInfo> oldMods = old.mods().stream().collect(Collectors.toMap(WGModInfo::modID, mod -> mod));
@@ -150,22 +150,22 @@ public class WorldGuard {
             WGModInfo oldModInfo = oldMods.get(modID);
             if (oldModInfo != null) {
                 if (!oldModInfo.equals(wgModInfo)) {
-                    errorMessage.append("Mod %s has mismatched version from previous worldgen settings. Old: %s | New: %s\n".formatted(modID, oldModInfo.modVersion(), wgModInfo.modVersion()));
+                    errorMessage.append("\t\t\tMod \"%s\" has mismatched version from previous worldgen settings. Old: %s | New: %s\n".formatted(modID, oldModInfo.modVersion(), wgModInfo.modVersion()));
                 }
             } else {
-                errorMessage.append("Mod %s was added.\n".formatted(modID));
+                errorMessage.append("\t\t\tMod \"%s\" was added.\n".formatted(modID));
             }
         });
 
         oldMods.forEach((modID, wgModInfo) -> {
             if (!newMods.containsKey(modID)) {
-                errorMessage.append("Mod %s was removed.\n".formatted(modID));
+                errorMessage.append("\t\t\tMod \"%s\" was removed.\n".formatted(modID));
             }
         });
 
         errorMessage.append("\n");
         errorMessage.append("\n");
-        errorMessage.append("==========================Detected Data Pack Changes==========================\n");
+        errorMessage.append("\t\t==========================Detected Data Pack Changes==========================\n");
 
 
         List<String> oldDatapacks = old.datapacks();
@@ -173,13 +173,13 @@ public class WorldGuard {
 
         for (String oldDatapack : oldDatapacks) {
             if (!newDatapacks.contains(oldDatapack)) {
-                errorMessage.append("Data pack %s was removed.\n".formatted(oldDatapack));
+                errorMessage.append("\t\t\tData pack \"%s\" was removed.\n".formatted(oldDatapack));
             }
         }
 
         for (String newDatapack : newDatapacks) {
             if (!oldDatapacks.contains(newDatapack)) {
-                errorMessage.append("Data pack %s was added.\n".formatted(newDatapack));
+                errorMessage.append("\t\t\tData pack \"%s\" was added.\n".formatted(newDatapack));
             }
         }
 
@@ -187,17 +187,17 @@ public class WorldGuard {
         errorMessage.append("\n");
         errorMessage.append("\n");
 
-        errorMessage.append("==========================Detected Biome Changes==========================\n");
+        errorMessage.append("\t\t==========================Detected Biome Changes==========================\n");
         List<String> oldBiomes = old.biomeList();
         List<String> newBiomes = currentData.biomeList();
         for (String oldBiome : oldBiomes) {
             if (!newBiomes.contains(oldBiome)) {
-                errorMessage.append("Biome %s was removed.\n".formatted(oldBiome));
+                errorMessage.append("\t\t\tBiome \"%s\" was removed.\n".formatted(oldBiome));
             }
         }
         for (String newBiome : newBiomes) {
             if (!oldBiomes.contains(newBiome)) {
-                errorMessage.append("Biome %s was added.\n".formatted(newBiome));
+                errorMessage.append("\t\t\tBiome %s was added.\n".formatted(newBiome));
             }
         }
         errorMessage.append("\n");
@@ -205,7 +205,7 @@ public class WorldGuard {
         errorMessage.append("\n");
 
 
-        errorMessage.append("IF YOU ARE CONFIDENT THIS IS A FALSE POSITIVE, YOU CAN IGNORE THIS MESSAGE. AND DELETE THE BACKUP LOCATED AT: %s\n".formatted(WORLD_GUARD_BACKUP_PATH.get().toAbsolutePath().toString()));
+        errorMessage.append("\t\tIF YOU ARE CONFIDENT THIS IS A FALSE POSITIVE, YOU CAN IGNORE THIS MESSAGE. AND DELETE THE BACKUP LOCATED AT: %s\n".formatted(WORLD_GUARD_BACKUP_PATH.get().toAbsolutePath().toString()));
 
 
         return errorMessage.toString();
