@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[52,)"
+issueTrackerURL = ""
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "worldguard"
+version = "${version}"
+displayName = "World Guard"
+authors = "Corgi Taco"
+description = '''
+Mod that prevents your world from loading if its generator settings changed between now and the last time you loaded your world.
+'''
+#logoFile = ""
+
+[[dependencies.worldguard]]
+modId = "forge"
+mandatory = true
+versionRange = "[52.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.worldguard]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.21.1]"
+ordering = "NONE"
+side = "BOTH"

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "worldguard",
+  "version": "${version}",
+  "name": "Example Mod",
+  "description": "Mod that prevents your world from loading if its generator settings changed between now and the last time you loaded your world.",
+  "authors": [
+    "Corgi Taco"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+  "license": "All Rights Reserved",
+  "icon": "assets/examplemod/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.corgitaco.worldguard.fabric.WorldGuardFabric"
+    ]
+  },
+  "mixins": [
+    "worldguard.mixins.json",
+    "worldguard-common.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.21.1"
+  }
+}

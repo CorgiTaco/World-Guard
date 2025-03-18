@@ -1,0 +1,6 @@
+accessWidener   v2  named
+
+accessible method net/minecraft/world/level/chunk/ChunkGenerator codec ()Lcom/mojang/serialization/MapCodec;
+accessible method net/minecraft/world/level/biome/BiomeSource codec ()Lcom/mojang/serialization/MapCodec;
+accessible field net/minecraft/world/level/chunk/ChunkGenerator biomeSource Lnet/minecraft/world/level/biome/BiomeSource;
+mutable field net/minecraft/world/level/chunk/ChunkGenerator biomeSource Lnet/minecraft/world/level/biome/BiomeSource;
