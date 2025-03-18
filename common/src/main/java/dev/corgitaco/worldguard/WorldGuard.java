@@ -77,7 +77,7 @@ public class WorldGuard {
                     List<String> newBiomes = currentData.biomeList();
                     for (String oldBiome : oldBiomes) {
                         if (!newBiomes.contains(oldBiome)) {
-                            throw new IllegalStateException("⛊ WORLD GUARDED: Missing biome in current worldgen settings. Please check your worldgen settings.");
+                            throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Missing biome in current worldgen settings. Please check your worldgen settings.", lastData, currentData));
                         }
                     }
                 }
