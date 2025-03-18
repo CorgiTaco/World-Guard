@@ -1,9 +1,9 @@
 package dev.corgitaco.worldguard;
 
-import dev.corgitaco.worldguard.platform.ModPlatform;
 import com.google.common.base.Suppliers;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
+import dev.corgitaco.worldguard.platform.ModPlatform;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -57,8 +57,6 @@ public class WorldGuard {
             boolean throwMissingBiome = worldGuardConfig.throwRemovedBiome();
 
 
-
-
             try {
                 CompoundTag nbt = NbtIo.readCompressed(WORLD_GUARD_BACKUP_PATH.get(), NbtAccounter.unlimitedHeap());
                 RegistryOps<Tag> registryOps = server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
@@ -83,47 +81,45 @@ public class WorldGuard {
                 }
 
                 for (Map.Entry<ResourceKey<LevelStem>, LevelStem> dimensionEntry : lastData.settings().dimensions().dimensions().entrySet()) {
-                    if (currentData.settings().dimensions().dimensions().containsKey(dimensionEntry.getKey())) {
-                        LevelStem lastDimension = dimensionEntry.getValue();
-                        LevelStem currentDimension = currentData.settings().dimensions().dimensions().get(dimensionEntry.getKey());
-                        if (currentDimension == null) {
-                            if (throwMissingDimension) {
-                                throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Missing dimension in current worldgen settings: " + dimensionEntry.getKey().location(), lastData, currentData));
-                            }
-                            continue;
+                    LevelStem lastDimension = dimensionEntry.getValue();
+                    LevelStem currentDimension = currentData.settings().dimensions().dimensions().get(dimensionEntry.getKey());
+                    if (currentDimension == null) {
+                        if (throwMissingDimension) {
+                            throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Missing dimension in current worldgen settings: " + dimensionEntry.getKey().location(), lastData, currentData));
                         }
+                        continue;
+                    }
 
-                        ChunkGenerator lastGenerator = lastDimension.generator();
-                        ChunkGenerator currentGenerator = currentDimension.generator();
-                        if (throwMismatchedChunkGenerator) {
-                            if (lastGenerator.getClass() != currentGenerator.getClass()) {
-                                throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Mismatch in chunk generator class between current and last worldgen settings for dimension " + dimensionEntry.getKey().location(), lastData, currentData));
-                            } else {
-                                MapCodec<ChunkGenerator> codec = (MapCodec<ChunkGenerator>) lastGenerator.codec();
-                                BiomeSource oldBiomeSource = lastGenerator.biomeSource;
-                                lastGenerator.biomeSource = currentGenerator.biomeSource;
+                    ChunkGenerator lastGenerator = lastDimension.generator();
+                    ChunkGenerator currentGenerator = currentDimension.generator();
+                    if (throwMismatchedChunkGenerator) {
+                        if (lastGenerator.getClass() != currentGenerator.getClass()) {
+                            throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Mismatch in chunk generator class between current and last worldgen settings for dimension " + dimensionEntry.getKey().location(), lastData, currentData));
+                        } else {
+                            MapCodec<ChunkGenerator> codec = (MapCodec<ChunkGenerator>) lastGenerator.codec();
+                            BiomeSource oldBiomeSource = lastGenerator.biomeSource;
+                            lastGenerator.biomeSource = currentGenerator.biomeSource;
 
-                                Tag lastGeneratorTag = codec.encoder().encodeStart(registryOps, lastGenerator).getOrThrow();
-                                Tag currentGeneratorTag = codec.encoder().encodeStart(registryOps, currentGenerator).getOrThrow();
-                                if (!lastGeneratorTag.equals(currentGeneratorTag)) {
-                                    throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Mismatch in chunk generator settings " + dimensionEntry.getKey().location(), lastData, currentData));
-                                }
-
-                                lastGenerator.biomeSource = oldBiomeSource;
+                            Tag lastGeneratorTag = codec.encoder().encodeStart(registryOps, lastGenerator).getOrThrow();
+                            Tag currentGeneratorTag = codec.encoder().encodeStart(registryOps, currentGenerator).getOrThrow();
+                            if (!lastGeneratorTag.equals(currentGeneratorTag)) {
+                                throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Mismatch in chunk generator settings " + dimensionEntry.getKey().location(), lastData, currentData));
                             }
+
+                            lastGenerator.biomeSource = oldBiomeSource;
                         }
+                    }
 
 
-                        if (throwMismatchedBiomeSource) {
-                            if (lastGenerator.getBiomeSource().getClass() != currentGenerator.getBiomeSource().getClass()) {
-                                throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Mismatch in biome source between current and last worldgen settings for dimension " + dimensionEntry.getKey().location(), lastData, currentData));
-                            } else {
-                                MapCodec<BiomeSource> codec = (MapCodec<BiomeSource>) lastGenerator.getBiomeSource().codec();
-                                Tag lastGeneratorTag = codec.encoder().encodeStart(registryOps, lastGenerator.getBiomeSource()).getOrThrow();
-                                Tag currentGeneratorTag = codec.encoder().encodeStart(registryOps, lastGenerator.getBiomeSource()).getOrThrow();
-                                if (!lastGeneratorTag.equals(currentGeneratorTag)) {
-                                    throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Mismatch in biome source settings " + dimensionEntry.getKey().location(), lastData, currentData));
-                                }
+                    if (throwMismatchedBiomeSource) {
+                        if (lastGenerator.getBiomeSource().getClass() != currentGenerator.getBiomeSource().getClass()) {
+                            throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Mismatch in biome source between current and last worldgen settings for dimension " + dimensionEntry.getKey().location(), lastData, currentData));
+                        } else {
+                            MapCodec<BiomeSource> codec = (MapCodec<BiomeSource>) lastGenerator.getBiomeSource().codec();
+                            Tag lastGeneratorTag = codec.encoder().encodeStart(registryOps, lastGenerator.getBiomeSource()).getOrThrow();
+                            Tag currentGeneratorTag = codec.encoder().encodeStart(registryOps, lastGenerator.getBiomeSource()).getOrThrow();
+                            if (!lastGeneratorTag.equals(currentGeneratorTag)) {
+                                throw new IllegalStateException(wrapErrorAndDumpMismatches("⛊ WORLD GUARDED: Mismatch in biome source settings " + dimensionEntry.getKey().location(), lastData, currentData));
                             }
                         }
                     }
